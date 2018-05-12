@@ -1,0 +1,100 @@
+Description：
+Given a string of digits, insert commas to create a sequence of strictly increasing numbers so as to minimize the magnitude of the last number. For this problem, leading zeros are allowed in front of a number. 
+
+Input
+Input will consist of multiple test cases. Each case will consist of one line, containing a string of digits of maximum length 80. A line consisting of a single 0 terminates input. 
+
+Output
+For each instance, output the comma separated strictly increasing sequence, with no spaces between commas or numbers. If there are several such sequences, pick the one which has the largest first value;if there's a tie, the largest second number, etc. 
+
+Sample Input
+3456
+3546
+3526
+0001
+100000101
+0
+
+Sample Output
+3,4,5,6
+35,46
+3,5,26
+0001
+100,000101
+
+基本思路：
+1)首先确定是动态规划，目的是既要保证最后一个数最小，又要保证第一个数最大
+2)同时解决这两个问题我们无从下手，所以应该想到先确定一个然后确定另一个
+3)首先从前往后找dp[i]:从1~n保证最后的数最小的时候,该数的长度，这样就找到了最后最小的数
+4)然后从后往前找dp[i]:表示从i~n最前面的数最大的时候,该数的长度，这样就找到了最前面最大的数
+
+代码如下:
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+const int inf = 0x3f3f3f3f;
+const int maxn = 100;
+
+char str[maxn];
+int dp[maxn];
+
+bool isg(int i,int j,int u,int v){
+    while(str[i]=='0'&&i<=j) i++;
+    while(str[u]=='0'&&u<=v) u++;
+    if(i>j) return false;
+    if(u>v) return true;
+    int l1=j-i+1;
+    int l2=v-u+1;
+    if(l1>l2) return true;
+    else if(l1<l2) return false;
+    else{
+        for(int k=i,p=u;k<=j;k++,p++){
+            if(str[k]>str[p]) return true;
+            else if(str[k]<str[p]) return false;
+        }
+    }
+    return false;
+}
+
+int main(){
+    while(~scanf("%s",str+1)){
+        int n=strlen(str+1);
+        if(n==1&&str[1]=='0') break;
+        dp[1]=1;
+        for(int i=2;i<=n;i++){
+            dp[i]=i;
+            for(int j=i-1;j>=1;j--){
+                if(isg(j+1,i,j-dp[j]+1,j)){
+                    dp[i]=i-j;
+                    break;
+                }
+            }
+        }
+        int pos=n-dp[n]+1;
+        dp[pos]=dp[n];
+        for(int i=pos-1;i>=1;i--){
+            if(str[i]=='0'){
+                dp[i]=dp[i+1]+1;
+                continue;
+            }
+            for(int j=pos;j>i;j--){
+                if(isg(j,j+dp[j]-1,i,j-1)){
+                    dp[i]=j-i;
+                    break;
+                }
+            }
+        }
+        for(int i=1;i<=dp[1];i++) putchar(str[i]);
+        int tmp=dp[1]+1;
+        while(tmp<=n){
+            putchar(',');
+            for(int i=tmp;i<tmp+dp[tmp];i++) putchar(str[i]);
+            tmp=tmp+dp[tmp];
+        }
+        putchar('\n');
+    }
+    return 0;
+}
