@@ -1,9 +1,19 @@
 Description:
-Joseph Fourier was a great mathematician and physicist and is well known for his mathematic series. Among all the nineteen children in his family, Joseph was the youngest and the smartest. He began to show his interest in mathematics when he was very young. After he grew up, he often corresponded with C. Bonard (a professor of mathematics at Auxerre) by exchanging letters. 
-In one letter written to Bonard, Fourier asked a question: how to draw 17 lines on a plane to make exactly 101 crossings, where each crossing belongs to exactly two lines. Obviously, this is an easy problem, and Figure-1 is a solution that satisfies his requirement. Now the problem for you is a universal one. Can we draw N lines on a plane to make exactly M crossings, where each crossing belongs to exactly two lines? If we can, how many pieces, at most, can these lines cut the plane into? 
+Joseph Fourier was a great mathematician and physicist and is well known for his mathematic series.
+Among all the nineteen children in his family, Joseph was the youngest and the smartest.
+He began to show his interest in mathematics when he was very young. 
+After he grew up, he often corresponded with C. Bonard (a professor of mathematics at Auxerre) by exchanging letters. 
+In one letter written to Bonard, Fourier asked a question:
+how to draw 17 lines on a plane to make exactly 101 crossings, where each crossing belongs to exactly two lines. 
+Obviously, this is an easy problem, and Figure-1 is a solution that satisfies his requirement. 
+Now the problem for you is a universal one.
+Can we draw N lines on a plane to make exactly M crossings, where each crossing belongs to exactly two lines?
+If we can, how many pieces, at most, can these lines cut the plane into? 
 
 Input
-The input may have several sets of test data. Each set is one line containing two integers N and M (1 <= N <= 100, 0 <= M <= 10000), separated by a space. The test data is followed by a line containing two zeros, which indicates the end of input and should not be processed as a set of data.
+The input may have several sets of test data. 
+Each set is one line containing two integers N and M (1 <= N <= 100, 0 <= M <= 10000), separated by a space. 
+The test data is followed by a line containing two zeros, which indicates the end of input and should not be processed as a set of data.
 
 Output
 Output one line for each set of input in the following format: 
