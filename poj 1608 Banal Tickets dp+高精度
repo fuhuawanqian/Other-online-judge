@@ -1,0 +1,221 @@
+Description:
+Peter is fond of number theory. That's why he is looking for interesting bus tickets.
+Ticket with the number of length 2N is called interesting if the product of the first N digits of its number is equal to the product of the last N digits. 
+Other tickets are called banal. 
+Peter has found a used ticket in his pocket. 
+Unfortunately the ticket was punched, so Peter cannot recognize some digits.
+He wonders whether this ticket was an interesting one.
+Moreover he wants to know how many different interesting and banal tickets could be punched to get this one. 
+Help Peter to find answers to his questions.
+
+Input
+The first line of the input file contains an integer N(1 <= N<=18). The next line contains a string representing the ticket number. 
+If some digit is punched out it is denoted by "?" otherwise it is denoted by itself.
+
+Output
+On the first line of the output file print the number of interesting tickets. 
+On the second line print the number of banal tickets.
+
+Sample Input
+2 
+2??3
+
+Sample Output
+4 
+96 
+
+基本思路:
+1)题目中既然提到了数论,应该想到10以内的数质因数分解只有四个数2,3,5,7，然后定义dp[p][a][b][c][d],其中p表示当前是第几位,a,b,c,d分别表示乘积2,3,5,7的
+个数，然后这个八成会爆内存，然后还是滚动数组吧.
+2)然后分含不含有0分类讨论
+
+代码如下:
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <cstring>
+#include <iostream>
+#define inf 1000000000
+#define rad 100000000
+#define ll long long
+using namespace std;
+int n;
+char str[100];
+ll f[2][55][40][20][20], g[55][40][20][20]; // i 2 3 5 7 0?
+
+struct data{
+	int l;ll v[20];
+	data(){
+		l=1;
+		memset(v,0,sizeof(v));
+	}
+    data(ll x){
+        memset(v,0,sizeof(v));
+        l=0;
+        while(x)
+        {
+            v[++l]=x%rad;
+            x/=rad;
+        }
+    }
+    ll& operator[](int x){ 
+		return v[x];
+	}
+	friend data operator+(data a,data b){
+	    if(a.l<b.l)swap(a,b);
+		for(int i=1;i<=b.l;i++)
+			a[i]+=b[i];
+		for(int i=1;i<=a.l;i++)
+			if(a[i]>=rad)
+			{
+				if(i==a.l)a.l++;
+				a[i+1]+=a[i]/rad;
+				a[i]%=rad;
+			}
+		return a;
+	}
+    friend data operator-(data a,data b){
+		for(int i=1;i<=b.l;i++)
+			a[i]-=b[i];
+		for(int i=1;i<=a.l;i++)
+            if(a[i]<0)
+            {
+                a[i]+=rad;
+                a[i+1]--;
+            }
+        while(!a[a.l]&&a.l>1)a.l--;
+		return a;
+	}
+    friend data operator*(data a,ll b){
+        for(int i=1;i<=a.l;i++)
+            a[i]*=b;
+        for(int i=1;i<=a.l;i++)
+            if(a[i]>=rad)
+            {
+                a[i+1]+=a[i]/rad;
+                a[i]%=rad;
+                if(i==a.l)a.l++;
+            }
+        return a;
+    }
+	friend data operator*(data a,data b){
+		data c;
+		for(int i=1;i<=a.l;i++)
+			for(int j=1;j<=b.l;j++)
+				c[i+j-1]+=a[i]*b[j];
+		for(int i=1;i<=a.l+b.l;i++)
+		{
+			if(c[i]>=rad)
+			{
+				c[i+1]+=c[i]/rad;
+				c[i]%=rad;
+			}
+			if(c.v[i])c.l=i;
+		}
+		return c;
+	}
+	friend void print(data a){
+        printf("%lld",a[a.l]);
+		for(int i=a.l-1;i;i--)printf("%.8lld",a[i]);
+		puts("");
+	}
+};
+
+void dp(int L, int R)
+{
+    memset(f, 0, sizeof(f));    
+    int p = 0, q = 1;
+    f[0][0][0][0][0] = 1;
+    for(int x = L - 1; x <= R - 1; x++)
+    {
+        int l = x - L + 1;
+        char ch = str[x + 1];
+        for(int a = 0; a <= 3 * l; a++)
+            for(int b = 0; b <= 2 * l; b++)
+                for(int c = 0; c <= l; c++)
+                    for(int d = 0; d <= l; d++)
+                        if(f[p][a][b][c][d])
+                        {
+                            if(ch == '1' || ch == '?')
+                                f[q][a][b][c][d] += f[p][a][b][c][d];
+                            if(ch == '2' || ch == '?')
+                                f[q][a+1][b][c][d] += f[p][a][b][c][d];
+                            if(ch == '3' || ch == '?')
+                                f[q][a][b+1][c][d] += f[p][a][b][c][d];
+                            if(ch == '4' || ch == '?')
+                                f[q][a+2][b][c][d] += f[p][a][b][c][d];
+                            if(ch == '5' || ch == '?')
+                                f[q][a][b][c+1][d] += f[p][a][b][c][d];
+                            if(ch == '6' || ch == '?')
+                                f[q][a+1][b+1][c][d] += f[p][a][b][c][d];
+                            if(ch == '7' || ch == '?')
+                                f[q][a][b][c][d+1] += f[p][a][b][c][d];
+                            if(ch == '8' || ch == '?')
+                                f[q][a+3][b][c][d] += f[p][a][b][c][d];
+                            if(ch == '9' || ch == '?')
+                                f[q][a][b+2][c][d] += f[p][a][b][c][d];
+                        }        
+        memset(f[p], 0, sizeof(f[p]));
+        swap(p, q);
+    }
+}
+data qpow(ll t, ll b)
+{
+    data ans = data(1);
+    data a = (data)(t);
+    for(ll i = b; i; i >>= 1, a = a * a)
+        if(i & 1)ans = ans * a;
+    return ans;
+}
+data calzero()
+{
+    int ans1 = 0, ans2 = 0;
+    for(int i = 1; i <= n; i++)
+        if(str[i] == '?')ans1++;
+    for(int i = n + 1; i <= 2 * n; i++)
+        if(str[i] == '?')ans2++;
+    data t1 = qpow(10, ans1) - qpow(9, ans1);
+    data t2 = qpow(10, ans2) - qpow(9, ans2);
+    return t1 * t2;
+}
+int main()
+{
+    scanf("%d", &n);
+    scanf("%s", str+1);
+    ll t1 = 0, t2 = 0, zl = 0, zr = 0;
+    for(int i = 1; i <= 2 * n; i++)
+        if(str[i] == '?')
+        {
+            if(i <= n)t1++;
+            else t2++;
+        }
+        else if(str[i] == '0')
+        {
+            if(i <= n)zl = 1;
+            else zr = 1;
+        }
+    data ans;
+    if(zl || zr)
+    {
+        if(zl && zr)
+            ans = qpow(10, t1 + t2);
+        else if(zl)
+            ans = qpow(10, t1) * (qpow(10, t2) - qpow(9, t2));
+        else ans = (qpow(10, t1) - qpow(9, t1)) * qpow(10, t2);
+    }
+    else
+    {
+        dp(1, n);
+        memcpy(g, f[n&1], sizeof(f[n&1]));
+        dp(n + 1, 2 * n);
+        for(int a = 0; a <= 3 * n; a++)
+            for(int b = 0; b <= 2 * n; b++)
+                for(int c = 0; c <= n; c++)
+                    for(int d = 0; d <= n; d++)
+                        ans = ans + (data)(g[a][b][c][d]) * (data)(f[n&1][a][b][c][d]);
+        ans = ans + calzero();
+    }
+    print(ans);
+    print(qpow(10, t1 + t2) - ans);
+    return 0;
+}
