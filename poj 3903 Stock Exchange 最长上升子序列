@@ -1,0 +1,91 @@
+Description:
+The world financial crisis is quite a subject. Some people are more relaxed while others are quite anxious. 
+John is one of them.
+He is very concerned about the evolution of the stock exchange. 
+He follows stock prices every day looking for rising trends. 
+Given a sequence of numbers p1, p2,...,pn representing stock prices,a rising trend is a subsequence pi1 < pi2 < ... < pik, with i1 < i2 < ... < ik.
+John’s problem is to find very quickly the longest rising trend.
+
+Input
+Each data set in the file stands for a particular set of stock prices.
+A data set starts with the length L (L ≤ 100000) of the sequence of numbers, followed by the numbers (a number fits a long integer). 
+White spaces can occur freely in the input. 
+The input data are correct and terminate with an end of file.
+
+Output
+The program prints the length of the longest rising trend. 
+For each set of data the program prints the result to the standard output from the beginning of a line.
+
+Sample Input
+6 
+5 2 1 4 5 3 
+3  
+1 1 1 
+4 
+4 3 2 1
+
+Sample Output
+3 
+1 
+1
+
+Hint
+There are three data sets. In the first case, the length L of the sequence is 6. 
+The sequence is 5, 2, 1, 4, 5, 3. The result for the data set is the length of the longest rising trend: 3.
+
+基本思路:
+最长上升子序列,h老师的写法很棒，学习了，并在下面附上最长不下降子序列
+
+代码如下:
+#include<cstdio>
+#include<queue>
+#include<cmath>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+
+int arr[maxn],f[maxn];
+
+int main(){
+    int n;
+    while(~scanf("%d",&n)){
+        memset(f,inf,sizeof(f));
+        for(int i=1;i<=n;i++) scanf("%d",&arr[i]);
+        for(int i=1;i<=n;i++){
+            *lower_bound(f,f+n,arr[i])=arr[i];
+        }
+        printf("%d\n",lower_bound(f,f+n,inf)-f);
+    }
+    return 0;
+}
+
+
+#include<cstdio>
+#include<queue>
+#include<cmath>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+
+int arr[maxn],f[maxn];
+
+int main(){
+    int n;
+    while(~scanf("%d",&n)){
+        memset(f,inf,sizeof(f));
+        for(int i=1;i<=n;i++) scanf("%d",&arr[i]);
+        for(int i=1;i<=n;i++){
+            *upper_bound(f,f+n,arr[i])=arr[i];
+        }
+        printf("%d\n",upper_bound(f,f+n,inf-1)-f);
+    }
+    return 0;
+}
