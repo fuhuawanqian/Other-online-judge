@@ -1,0 +1,135 @@
+Description:
+Farmer John's N cows (1 ≤ N ≤ 100,000) share many similarities. In fact, FJ has been able to narrow down the list of features shared by his cows to a list of only K different features (1 ≤ K ≤ 30). For example, cows exhibiting feature #1 might have spots, cows exhibiting feature #2 might prefer C to Pascal, and so on.
+
+FJ has even devised a concise way to describe each cow in terms of its "feature ID", a single K-bit integer whose binary representation tells us the set of features exhibited by the cow. As an example, suppose a cow has feature ID = 13. Since 13 written in binary is 1101, this means our cow exhibits features 1, 3, and 4 (reading right to left), but not feature 2. More generally, we find a 1 in the 2^(i-1) place if a cow exhibits feature i.
+
+Always the sensitive fellow, FJ lined up cows 1..N in a long row and noticed that certain ranges of cows are somewhat "balanced" in terms of the features the exhibit. A contiguous range of cows i..j is balanced if each of the K possible features is exhibited by the same number of cows in the range. FJ is curious as to the size of the largest balanced range of cows. See if you can determine it.
+
+Input
+Line 1: Two space-separated integers, N and K. 
+Lines 2.. N+1: Line i+1 contains a single K-bit integer specifying the features present in cow i. The least-significant bit of this integer is 1 if the cow exhibits feature #1, and the most-significant bit is 1 if the cow exhibits feature # K.
+
+Output
+Line 1: A single integer giving the size of the largest contiguous balanced group of cows.
+
+Sample Input
+7 3
+7
+6
+7
+2
+1
+4
+2
+
+Sample Output
+4
+
+Hint
+In the range from cow #3 to cow #6 (of size 4), each feature appears in exactly 2 cows in this range
+
+基本思路:
+数组sum[i][j]表示从第1到第i头cow属性j的出现次数。
+所以题目要求等价为:
+求满足sum[i][0]-sum[j][0]=sum[i][1]-sum[j][1]=.....=sum[i][k-1]-sum[j][k-1] (j<i)中最大的i-j
+将上式变换可得到
+sum[i][1]-sum[i][0] = sum[j][1]-sum[j][0]
+sum[i][2]-sum[i][0] = sum[j][2]-sum[j][0]
+......
+sum[i][k-1]-sum[i][0] = sum[j][k-1]-sum[j][0]
+令C[i][y]=sum[i][y]-sum[i][0] (0<y<k)
+初始条件C[0][0~k-1]=0
+所以只需求满足C[i][]==C[j][] 中最大的i-j，其中0<=j<i<=n。
+C[i][]==C[j][] 即二维数组C[][]第i行与第j行对应列的值相等，
+那么原题就转化为求C数组中 相等且相隔最远的两行的距离i-j。
+
+代码如下:
+#include<cstdio>
+#include<queue>
+#include<cmath>
+#include<cstring>
+#include<algorithm>
+
+using namespace std;
+
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+const int mod = 99991;
+
+int n,k,ans;
+int sum[maxn][33],C[maxn][33],arr[maxn][33];
+struct Table{
+    int id;
+    Table* next;
+    Table(){
+        next=NULL;
+    }
+};
+Table* table[maxn];
+bool cmp(int u,int v){
+    for(int i=0;i<k;i++){
+        if(C[u][i]!=C[v][i]){
+            return false;
+        }
+    }
+    return true;
+}
+void Hash(int id){
+    int key=0;
+    for(int i=0;i<k;i++){
+        key+=C[id][i]*i;
+    }
+    key=(int)abs(key)%mod;
+    if(!table[key]){
+        Table* p=new Table;
+        p->id=id;
+        table[key]=p;
+    }else{
+        Table* p=table[key];
+        if(cmp(p->id,id)){
+            int dis=id-(p->id);
+            ans=max(ans,dis);
+            return;
+        }else{
+            while(p->next){
+                if(cmp(p->next->id,id)){
+                    int dis=id-(p->next->id);
+                    ans=max(ans,dis);
+                    return;
+                }
+                p=p->next;
+            }
+            Table* tmp=new Table;
+            tmp->id=id;
+            p->next=tmp;
+        }
+    }
+    return;
+}
+void init(){
+    for(int i=0;i<k;i++){
+        sum[0][i]=0;
+        C[0][i]=0;
+    }
+    memset(table,0,sizeof(table));
+    Hash(0);
+    ans=0;
+}
+int main(){
+    while(~scanf("%d%d",&n,&k)){
+        init();
+        for(int i=1;i<=n;i++){
+            int val;
+            scanf("%d",&val);
+            for(int j=0;j<k;j++){
+                arr[i][j]=val%2;
+                val/=2;
+                sum[i][j]=sum[i-1][j]+arr[i][j];
+                C[i][j]=sum[i][j]-sum[i][0];
+            }
+            Hash(i);
+        }
+        printf("%d\n",ans);
+    }
+    return 0;
+}
