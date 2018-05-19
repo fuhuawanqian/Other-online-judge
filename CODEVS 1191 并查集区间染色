@@ -1,0 +1,53 @@
+输出描述 Output Description
+输出M行，为每次操作后剩余黑色点的个数。
+
+样例输入 Sample Input
+10 3
+3 3
+5 7
+2 8
+
+样例输出 Sample Output
+9
+6
+3
+
+数据范围及提示 Data Size & Hint
+数据限制
+对30%的数据有1<=N<=2000,1<=M<=2000
+对100%数据有1<=Li<=Ri<=N<=200000,1<=M<=200000
+
+基本思路:
+线段树/并查集
+
+代码如下:
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int inf = 0x3f3f3f3f;
+const int maxn = 200000+10;
+
+int col[maxn];
+
+int dsu(int x){
+    return x==col[x]?x:(col[x]=dsu(col[x]));
+}
+
+int main(){
+    int n,m;
+    scanf("%d%d",&n,&m);
+    for(int i=0;i<=n;i++) col[i]=i;
+    while(m--){
+        int u,v;
+        scanf("%d%d",&u,&v);
+        if(u>v) swap(u,v);
+        while(dsu(v)!=dsu(u-1)){
+            col[dsu(v)]=col[dsu(v)-1];
+            n--;
+        }
+        printf("%d\n",n);
+    }
+
+    return 0;
+}
