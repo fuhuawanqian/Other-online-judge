@@ -1,0 +1,70 @@
+题目描述 Description
+在古埃及，人们使用单位分数的和(形如1/a的, a是自然数)表示一切有理数。
+如：2/3=1/2+1/6,但不允许2/3=1/3+1/3,因为加数中有相同的。
+对于一个分数a/b,表示方法有很多种，但是哪种最好呢？ 
+首先，加数少的比加数多的好，其次，加数个数相同的，最小的分数越大越 好。 
+如： 19/45=1/3 + 1/12 + 1/180 19/45=1/3 + 1/15 + 1/45 19/45=1/3 + 1/18 + 1/30, 19/45=1/4 + 1/6 + 1/180 19/45=1/5 + 1/6 + 1/18. 
+最好的是最后一种，因为1/18比1/180,1/45,1/30,1/180都大。 给出a,b(0<a<b<1000),编程计算最好的表达方式。
+
+输入描述 Input Description
+a b
+
+输出描述 Output Description
+若干个数，自小到大排列，依次是单位分数的分母。
+
+样例输入 Sample Input
+19 45
+
+样例输出 Sample Output
+5 6 18
+
+基本思路:
+迭代加深搜索
+
+代码如下:
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+const int inf = 0x3f3f3f3f;
+const int maxn = 1000+10;
+
+ll now[maxn],ans[maxn];
+bool flag;
+ll gcd(ll a,ll b){
+    if(!b) return a;
+    else return gcd(b,a%b);
+}
+void dfs(int cur,int pre,ll a,ll b){
+    ll p=gcd(a,b);a/=p;b/=p;
+    if(cur==1){
+        if(a==1&&b>pre){
+            if(flag&&b>=now[1]) return;
+            now[1]=b;
+            memcpy(ans,now,sizeof(now));
+            flag=true;
+            return;
+        }
+        return;
+    }
+    for(int i=pre,j=ceil(double(b)*cur/a);i<=j;i++){
+        now[cur]=i;
+        dfs(cur-1,i,a*i-b,b*i);
+    }
+}
+int main(){
+    ll a,b;
+    int sz;
+    scanf("%lld%lld",&a,&b);
+    flag=false;
+    for(sz=1;;sz++){
+        dfs(sz,1,a,b);
+        if(flag) break;
+    }
+    for(int i=sz;i>=1;i--){
+        if(i==sz) printf("%I64d",ans[i]);
+        else printf(" %I64d",ans[i]);
+    }
+    return 0;
+}
