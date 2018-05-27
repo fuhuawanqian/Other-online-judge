@@ -1,0 +1,95 @@
+Description：
+小明维护着一个程序员论坛。现在他收集了一份”点赞”日志，日志共有N行。其中每一行的格式是：
+ts id
+表示在ts时刻编号id的帖子收到一个”赞”。
+现在小明想统计有哪些帖子曾经是”热帖”。如果一个帖子曾在任意一个长度为D的时间段内收到不少于K个赞，小明就认为这个帖子曾是”热帖”。
+具体来说，如果存在某个时刻T满足该帖在[T, T+D)这段时间内(注意是左闭右开区间)收到不少于K个赞，该帖就曾是”热帖”。
+给定日志，请你帮助小明统计出所有曾是”热帖”的帖子编号。
+
+【输入格式】
+第一行包含两个整数N和K。  
+以下N行每行一个整数Ai。  
+
+对于40%的数据，1 <= K <= N <= 100  
+对于60%的数据，1 <= K <= 1000  
+对于100%的数据，1 <= K <= N <= 100000  -100000 <= Ai <= 100000  
+
+【输出格式】
+一个整数，表示答案。
+
+【输入样例】
+5 3 
+-100000   
+-10000   
+2   
+100000  
+10000  
+
+【输出样例】
+999100009
+
+基本思路：
+尺取法
+
+代码如下：
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+const int mod = 1000000009;
+
+int z[maxn],f[maxn];
+bool cmp1(int a,int b){
+    return a>b;
+}
+bool cmp2(int a,int b){
+    return a<b;
+}
+int main(){
+    int n,k,cntz=0,cntf=0;
+    scanf("%d%d",&n,&k);
+    for(int i=1;i<=n;i++){
+        int a;
+        scanf("%d",&a);
+        if(a>0) z[cntz++]=a;
+        if(a<0) f[cntf++]=-a;
+    }
+    sort(z,z+cntz,cmp1);
+    sort(f,f+cntf,cmp1);
+    ll ans=0;
+    int ii=0,jj=0;
+    while(k--){
+        if(z[ii]>f[jj]){
+            ans*=z[ii];
+            ans%=mod;
+            ++ii;
+        }else{
+            ans*=f[jj];
+            ans%=mod;
+            jj++;
+        }
+    }
+    if(jj%2==0){
+        printf("%I64d\n",ans%mod);
+    }else{
+        if(cntz!=0){
+            ll tmp1,tmp2;
+            tmp1=ans/f[cntf-1]*z[cntz-1];
+            tmp2=ans/z[cntz-1]*f[cntf-1];
+            ll res=max(tmp1,tmp2);
+            printf("I64d\n",res%mod);
+        }else{
+            sort(f,f+cntf,cmp2);
+            ll tmp=1;
+            for(int i=0;i<k;i++){
+                tmp*=f[i];
+                tmp%=mod;
+            }
+            printf("%I64d\n",tmp%mod);
+        }
+    }
+    return 0;
+}
