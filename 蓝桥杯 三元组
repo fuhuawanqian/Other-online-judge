@@ -1,0 +1,32 @@
+Description：
+给定三元组：
+A={A1,A2,A3,...,An}
+B={B1,B2,B3,...,Bn}
+C={C1,C2,C3,...,Cn}
+请统计有多少个三元组{i,j,k}满足：
+1<=i,j,k<=n
+Ai<Bj<Ck
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+
+int main(){
+    int n;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++) scanf("%d",&a[i]);sort(a,a+n);
+    for(int j=0;j<n;j++) scanf("%d",&b[i]);sort(b,b+n);
+    for(int k=0;k<n;k++) scanf("%d",&c[i]);sort(c,c+n);
+    ll sum=0;
+    for(int i=0;i<n;i++){
+        int u=lower_bound(a,a+n,b[i])-a;
+        int v=n-(upper_bound(c,c+n,b[i])-c);
+        sum+=u*v;
+    }
+    printf("%I64d\n",sum);
+    return 0;
+}
