@@ -1,0 +1,74 @@
+Description:
+给定N个整数A1, A2, … AN。请你从中选出K个数，使其乘积最大。
+请你求出最大的乘积，由于乘积可能超出整型范围，你只需输出乘积除以1000000009的余数。
+注意，如果X<0， 我们定义X除以1000000009的余数是负(-X)除以1000000009的余数。
+即：0-((0-x) % 1000000009)
+
+基本思路：
+贪心,最后判断正负，然后
+1.如果是正的话输出，
+2.1)如果是负的，并且如果有正数的话，就乘一个正数除以一个负数或者乘以一个负数除以一个负数，输出其中较大的，
+  2)如果没有正数，就从负数绝对值小的开始乘，最后输出
+
+代码如下：
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+const int mod = 1000000009;
+
+int z[maxn],f[maxn];
+bool cmp1(int a,int b){
+    return a>b;
+}
+bool cmp2(int a,int b){
+    return a<b;
+}
+int main(){
+    int n,k,cntz=0,cntf=0;
+    scanf("%d%d",&n,&k);
+    for(int i=1;i<=n;i++){
+        int a;
+        scanf("%d",&a);
+        if(a>0) z[cntz++]=a;
+        if(a<0) f[cntf++]=-a;
+    }
+    sort(z,z+cntz,cmp1);
+    sort(f,f+cntf,cmp1);
+    ll ans=0;
+    int ii=0,jj=0;
+    while(k--){
+        if(z[ii]>f[jj]){
+            ans*=z[ii];
+            ans%=mod;
+            ++ii;
+        }else{
+            ans*=f[jj];
+            ans%=mod;
+            jj++;
+        }
+    }
+    if(jj%2==0){
+        printf("%I64d\n",ans%mod);
+    }else{
+        if(cntz!=0){
+            ll tmp1,tmp2;
+            tmp1=ans/f[cntf-1]*z[cntz-1];
+            tmp2=ans/z[cntz-1]*f[cntf-1];
+            ll res=max(tmp1,tmp2);
+            printf("I64d\n",res%mod);
+        }else{
+            sort(f,f+cntf,cmp2);
+            ll tmp=1;
+            for(int i=0;i<k;i++){
+                tmp*=f[i];
+                tmp%=mod;
+            }
+            printf("%I64d\n",tmp%mod);
+        }
+    }
+    return 0;
+}
