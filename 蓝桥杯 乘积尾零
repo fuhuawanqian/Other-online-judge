@@ -1,0 +1,30 @@
+Description：
+输入n多个数，然后问你最后他们乘积末尾有多少个零
+
+基本思路：
+10=2*5，所以分解出多少个2和5取其中少的那个就是了
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+const int inf = 0x3f3f3f3f;
+const int maxn = 100000+10;
+
+int main(){
+    int sn=0,fn=0;
+    int n;
+    while(~scanf("%d",&n)){
+        while(n%2==0){
+            sn++;
+            n/=2;
+        }
+        while(n%5==0){
+            fn++;
+            n/=5;
+        }
+    }
+    printf("%d\n",min(sn,fn));
+    return 0;
+}
