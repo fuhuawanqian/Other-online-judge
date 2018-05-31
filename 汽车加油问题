@@ -1,0 +1,45 @@
+Description:
+汽车加油问题，输入n和k，然后输入k+1个数，分别表示起点到第一个加油站，第一个加油站到第二个加油站,...,第k个加油站到目的地的距离，让求最少的加油次数
+
+基本思路：
+贪心好了，但是，写崩了，菜死了.qaq,就两个注意的地方:
+1.最好单独拿出来判断一下是否有解，因为一旦某两个相邻地方之间的距离大于n就无解，其他都有解
+2.然后注意我是用sum+dis的话在循环中每次判词判断是>n,这个可以避免到最后一个刚好是0的情况，这个时候不要-n，-n是错的，应该令sum=dis[i]
+
+代码如下:
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+const int inf = 0x3f3f3f3f;
+const int maxn = 1000+10;
+
+int dis[maxn];
+void greedy(int n,int k){
+    bool flag=true;
+    for(int i=0;i<=k;i++){
+        if(dis[i]-n>0){
+            printf("No Solution!");
+            return;
+        }
+    }
+    int sum=0,ans=0;
+    for(int i=0;i<=k;i++){
+        sum+=dis[i];
+        if(sum>n){
+            sum=dis[i];
+            ++ans;
+        }
+    }
+    printf("%d\n",ans);
+}
+int main(){
+    int n,k;
+    scanf("%d%d",&n,&k);
+    for(int i=0;i<=k;i++){
+        scanf("%d",&dis[i]);
+    }
+    greedy(n,k);
+    return 0;
+}
